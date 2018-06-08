@@ -3,7 +3,7 @@
 Maintained Version of [@meteor-factory](https://github.com/brentvatne/)'s [package](https://www.npmjs.com/package/react-native-swipe-cards).
 
 
-![React Native Swipe Cards](https://github.com/meteor-factory/react-native-tinder-swipe-cards/raw/master/screenshots/swiper-cards.gif
+![React Native Swipe Cards](https://github.com/jonathanrinciari/react-native-swipeable-cards/raw/master/screenshots/Demo.gif
 )
 
 ## Quick Start
