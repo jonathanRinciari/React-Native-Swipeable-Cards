@@ -7,9 +7,9 @@ Maintained Version of [@meteor-factory](https://github.com/brentvatne/)'s [packa
 )
 
 ## Quick Start
-1. `npm install --save react-native-swipe-cards`
+1. `npm install --save react-native-swipeable-cards`
 2. Create a module e.g. `SwipeCards.js`
-3. Import it `import SwipeCards from './SwipeCards.js'`
+3. Import it `import SwipeCards from 'react-native-swipeable-cards'`
 4. Render it `<SwipeCards style={{flex: 1}} />`
 
 ```javascript
@@ -19,7 +19,7 @@ Maintained Version of [@meteor-factory](https://github.com/brentvatne/)'s [packa
 import React, { Component } from 'react';
 import {StyleSheet, Text, View, Image} from 'react-native';
 
-import SwipeCards from 'react-native-swipe-cards';
+import SwipeCards from 'react-native-swipeable-cards';
 
 class Card extends React.Component {
   constructor(props) {
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
 import React from 'react';
 import {StyleSheet, Text, View, Image} from 'react-native';
 
-import SwipeCards from 'react-native-swipe-cards';
+import SwipeCards from 'react-native-swipeable-cards';
 
 class Card extends React.Component {
   constructor(props) {
