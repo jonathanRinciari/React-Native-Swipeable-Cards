@@ -23,12 +23,7 @@ const SWIPE_THRESHOLD = 120;
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'stretch',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
     backgroundColor: 'transparent'
   },
   yup: {
@@ -44,6 +39,7 @@ const styles = StyleSheet.create({
   },
   yupText: {
     fontSize: 40,
+    fontWeight: 'bold',
     color: 'green',
   },
   maybe: {
@@ -565,7 +561,7 @@ export default class SwipeCards extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, this.props.containerStyle]}>
         {this.props.stack ? this.renderStack() : this.renderCard()}
         {this.renderMaybe()}
       </View>
