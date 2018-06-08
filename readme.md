@@ -209,10 +209,12 @@ export default class App extends React.Component {
         renderNoMoreCards={() => <NoMoreCards />}
         showYup={true}
         showNope={true}
-
+        keyExtractor={(card) => {
+          return card.name
+        }}
         handleYup={this.handleYup}
         handleNope={this.handleNope}
-        cardRemoved={this.cardRemoved.bind(this)}
+        cardRemoved={(card) => this.cardRemoved(card)}
       />
     )
   }
@@ -293,12 +295,5 @@ const styles = StyleSheet.create({
 
 ### Todo (PRs welcome!)
 - [ ] Show next card underneath current card
-- [ ] Shadow when card is being dragged
-- [ ] Example with backend
-- [ ] Example with polaroids
-- [ ] Submit to repos
-- [x] renderYup
-- [x] renderNope
-- [ ] Testing
 - [ ] Add more args to `cardRemoved`?
-- [ ] `class extends` all components
+- [ ] Update ReadMe
