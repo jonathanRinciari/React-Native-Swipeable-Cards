@@ -1,0 +1,30 @@
+{
+  "name": "react-native-swipeable-cards",
+  "version": "1.0.0",
+  "description": "Swipeable card component for react native",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonathanRinciari/React-Native-Swipeable-Cards.git"
+  },
+  "keywords": [
+    "react-native",
+    "cards",
+    "swipeable",
+    "card",
+    "tindercard",
+    "tinder"
+  ],
+  "author": "meteor-factory",
+  "maintainers": [
+    "Jonathan Rinciari"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "clamp": "^1.0.1",
+    "prop-types": "^15.6.0"
+  }
+}
