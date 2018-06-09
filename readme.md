@@ -108,12 +108,12 @@ const styles = StyleSheet.create({
 ```javascript
 'use strict';
 
-import React from 'react';
+import React, { Component } from 'react';
 import {StyleSheet, Text, View, Image} from 'react-native';
 
 import SwipeCards from 'react-native-swipeable-cards';
 
-class Card extends React.Component {
+class Card extends Component {
   constructor(props) {
     super(props);
   }
@@ -123,6 +123,12 @@ class Card extends React.Component {
       <View style={styles.card}>
         <Image style={styles.thumbnail} source={{uri: this.props.image}} />
         <Text style={styles.text}>This is card {this.props.name}</Text>
+        <Button type='outline' title='Nah' 
+        style={SwipeStyles.rejectButton} 
+        onPress={() => {
+            this.props.swiper._forceNextCard()
+        }}
+      />
       </View>
     )
   }
@@ -203,8 +209,9 @@ export default class App extends React.Component {
     return (
       <SwipeCards
         cards={this.state.cards}
+        ref = {(swiper) => this.swiper = swiper}
         loop={false}
-        renderCard={(cardData) => <Card {...cardData} />}
+        renderCard={(cardData) => <Card swiper={this.swiper} {...cardData} />}
         renderNoMoreCards={() => <NoMoreCards />}
         showRightOverlay={true}
         showLeftOverlay={true}
