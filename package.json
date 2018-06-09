@@ -1,6 +1,6 @@
 {
   "name": "react-native-swipeable-cards",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Swipeable card component for react native",
   "main": "SwipeCards.js",
   "scripts": {
