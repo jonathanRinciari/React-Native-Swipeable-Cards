@@ -454,6 +454,7 @@ export default class SwipeCards extends Component {
             { translateX: translateX },
             { translateY: translateY },
             { rotate: rotate },
+            { opacity },
             { scale: this.state.enter.interpolate({ inputRange: [0, 1], outputRange: [lastScale, scale] }) }
           ]
         };
