@@ -18,7 +18,7 @@ import clamp from 'clamp';
 
 import Defaults from './Defaults.js';
 
-const viewport = Dimensions.get('window')
+const {height, width} = Dimensions.get('window')
 const SWIPE_THRESHOLD = 120;
 
 const styles = StyleSheet.create({
@@ -74,7 +74,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   card: {
-    flex: 1
+    flex: 1,
+    position: 'absolute',
+    width: width - 50,
+    height: height - 120
   }
 });
 
@@ -121,7 +124,8 @@ export default class SwipeCards extends Component {
     overlayRightTextStyle: PropTypes.object,
     overlayUpWrapper: PropTypes.object,
     overlayLeftTextStyle: PropTypes.object,
-    overlayLeftWrapper: PropTypes.object
+    overlayLeftWrapper: PropTypes.object,
+    cardStyle: PropTypes.object
   };
 
   static defaultProps = {
@@ -132,9 +136,9 @@ export default class SwipeCards extends Component {
     onLoop: () => null,
     allowGestureTermination: true,
     stack: false,
-    stackDepth: 5,
-    stackOffsetX: 25,
-    stackOffsetY: 0,
+    stackDepth: 3,
+    stackOffsetX: 0,
+    stackOffsetY: 15,
     showRightOverlay: true,
     showUpOverlay: true,
     showLeftOverlay: true,
@@ -159,7 +163,8 @@ export default class SwipeCards extends Component {
     overlayRight: null,
     overlayUpTextStyle: null,
     overlayLeftWrapper: null,
-    overlayUpWrapper: null
+    overlayUpWrapper: null,
+    cardStyle: null
   };
 
   constructor(props) {
@@ -453,12 +458,12 @@ export default class SwipeCards extends Component {
           ]
         };
 
-        return <Animated.View key={key} style={[styles.card, animatedCardStyles]} {... this._panResponder.panHandlers}>
+        return <Animated.View key={key} style={[styles.card, animatedCardStyles, this.props.cardStyle, { left: 0, top: 0, right: 0, bottom: 0 }]} {... this._panResponder.panHandlers}>
           {this.props.renderCard(this.state.card)}
         </Animated.View>;
       }
 
-      return <Animated.View key={key} style={style}>{this.props.renderCard(card)}</Animated.View>;
+      return <Animated.View key={key} style={[style, styles.card, this.props.cardStyle]}>{this.props.renderCard(card)}</Animated.View>;
     });
   }
 
@@ -478,7 +483,7 @@ export default class SwipeCards extends Component {
 
     let animatedCardStyles = { transform: [{ translateX }, { translateY }, { rotate }, { scale }], opacity };
 
-    return <Animated.View key={key} style={[styles.card, animatedCardStyles]} {... this._panResponder.panHandlers}>
+    return <Animated.View key={key} style={[styles.card, animatedCardStyles, this.props.cardStyle]} {... this._panResponder.panHandlers}>
       {this.renderLeftOverlay()}
       {this.renderRightOverlay()}
       {this.props.renderCard(this.state.card)}
