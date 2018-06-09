@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent'
   },
-  yup: {
+  overlayRightWrapper: {
     position: 'absolute',
     top: 75,
     left: 20,
@@ -37,12 +37,12 @@ const styles = StyleSheet.create({
     padding: 10,
     zIndex: 2,
   },
-  yupText: {
+  overlayRightText: {
     fontSize: 40,
     fontWeight: 'bold',
     color: 'green',
   },
-  maybe: {
+  overlayUpWrapper: {
     borderColor: 'blue',
     borderWidth: 2,
     position: 'absolute',
@@ -51,11 +51,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     right: 20,
   },
-  maybeText: {
+  overlayUpText: {
     fontSize: 16,
     color: 'blue',
   },
-  nope: {
+  overlayLeftWrapper: {
     position: 'absolute',
     top: 75,
     right: 20,
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     padding: 10,
     zIndex: 2,
   },
-  nopeText: {
+  overlayLeftText: {
     fontSize: 40,
     backgroundColor: 'transparent',
     textAlign: 'right',
@@ -87,7 +87,7 @@ export default class SwipeCards extends Component {
   static propTypes = {
     cards: PropTypes.array,
     cardKey: PropTypes.string,
-    hasMaybeAction: PropTypes.bool,
+    swipeUp: PropTypes.bool,
     loop: PropTypes.bool,
     onLoop: PropTypes.func,
     allowGestureTermination: PropTypes.bool,
@@ -97,31 +97,37 @@ export default class SwipeCards extends Component {
     stackOffsetX: PropTypes.number,
     stackOffsetY: PropTypes.number,
     renderNoMoreCards: PropTypes.func,
-    showYup: PropTypes.bool,
-    showMaybe: PropTypes.bool,
-    showNope: PropTypes.bool,
-    handleYup: PropTypes.func,
-    handleMaybe: PropTypes.func,
-    handleNope: PropTypes.func,
-    yupText: PropTypes.string,
-    yupView: PropTypes.element,
-    maybeText: PropTypes.string,
-    maybeView: PropTypes.element,
-    nopeText: PropTypes.string,
-    noView: PropTypes.element,
+    showRightOverlay: PropTypes.bool,
+    showUpOverlay: PropTypes.bool,
+    showLeftOverlay: PropTypes.bool,
+    onSwipeRight: PropTypes.func,
+    onSwipeUp: PropTypes.func,
+    onSwipeLeft: PropTypes.func,
+    overlayRightText: PropTypes.string,
+    overlayRightWrapper: PropTypes.object,
+    overlayRight: PropTypes.element,
+    overlayUpText: PropTypes.string,
+    overlayUp: PropTypes.element,
+    overlayLeftText: PropTypes.string,
+    overlayLeft: PropTypes.element,
     onClickHandler: PropTypes.func,
     renderCard: PropTypes.func,
     cardRemoved: PropTypes.func,
     dragY: PropTypes.bool,
     smoothTransition: PropTypes.bool,
     keyExtractor: PropTypes.func,
-    rotation: PropTypes.bool
+    rotation: PropTypes.bool,
+    overlayUpTextStyle: PropTypes.object,
+    overlayRightTextStyle: PropTypes.object,
+    overlayUpWrapper: PropTypes.object,
+    overlayLeftTextStyle: PropTypes.object,
+    overlayLeftWrapper: PropTypes.object
   };
 
   static defaultProps = {
     cards: [],
     cardKey: 'key',
-    hasMaybeAction: false,
+    swipeUp: false,
     loop: false,
     onLoop: () => null,
     allowGestureTermination: true,
@@ -129,15 +135,15 @@ export default class SwipeCards extends Component {
     stackDepth: 5,
     stackOffsetX: 25,
     stackOffsetY: 0,
-    showYup: true,
-    showMaybe: true,
-    showNope: true,
-    handleYup: (card) => null,
-    handleMaybe: (card) => null,
-    handleNope: (card) => null,
-    nopeText: "Nope!",
-    maybeText: "Maybe!",
-    yupText: "Yup!",
+    showRightOverlay: true,
+    showUpOverlay: true,
+    showLeftOverlay: true,
+    onSwipeRight: (card) => null,
+    onSwipeUp: (card) => null,
+    onSwipeLeft: (card) => null,
+    overlayLeftText: "Dislike",
+    overlayUpText: "Maybe!",
+    overlayRightText: "Like!",
     onClickHandler: () => { alert('tap') },
     onDragStart: () => { },
     onDragRelease: () => { },
@@ -147,7 +153,13 @@ export default class SwipeCards extends Component {
     dragY: true,
     smoothTransition: false,
     keyExtractor: null,
-    rotation: true
+    rotation: true,
+    overlayRightTextStyle: null,
+    overlayRightWrapper: null,
+    overlayRight: null,
+    overlayUpTextStyle: null,
+    overlayLeftWrapper: null,
+    overlayUpWrapper: null
   };
 
   constructor(props) {
@@ -208,7 +220,7 @@ export default class SwipeCards extends Component {
 
         const hasSwipedHorizontally = Math.abs(this.state.pan.x._value) > SWIPE_THRESHOLD
         const hasSwipedVertically = Math.abs(this.state.pan.y._value) > SWIPE_THRESHOLD
-        if (hasSwipedHorizontally || (hasSwipedVertically && this.props.hasMaybeAction)) {
+        if (hasSwipedHorizontally || (hasSwipedVertically && this.props.swipeUp)) {
 
           let cancelled = false;
 
@@ -217,11 +229,11 @@ export default class SwipeCards extends Component {
           const hasMovedUp = hasSwipedVertically && this.state.pan.y._value < 0
 
           if (hasMovedRight) {
-            cancelled = this.props.handleYup(this.state.card);
+            cancelled = this.props.onSwipeRight(this.state.card);
           } else if (hasMovedLeft) {
-            cancelled = this.props.handleNope(this.state.card);
-          } else if (hasMovedUp && this.props.hasMaybeAction) {
-            cancelled = this.props.handleMaybe(this.state.card);
+            cancelled = this.props.onSwipeLeft(this.state.card);
+          } else if (hasMovedUp && this.props.swipeUp) {
+            cancelled = this.props.onSwipeUp(this.state.card);
           } else {
             cancelled = true
           }
@@ -467,30 +479,30 @@ export default class SwipeCards extends Component {
     let animatedCardStyles = { transform: [{ translateX }, { translateY }, { rotate }, { scale }], opacity };
 
     return <Animated.View key={key} style={[styles.card, animatedCardStyles]} {... this._panResponder.panHandlers}>
-      {this.renderNope()}
-      {this.renderYup()}
+      {this.renderLeftOverlay()}
+      {this.renderRightOverlay()}
       {this.props.renderCard(this.state.card)}
     </Animated.View>;
   }
 
-  renderNope() {
+  renderLeftOverlay() {
     let { pan } = this.state;
-    let nopeOpacity = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD, -(SWIPE_THRESHOLD / 2)], outputRange: [1, 0], extrapolate: 'clamp' });
+    let overlayOpacity = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD, -(SWIPE_THRESHOLD / 2)], outputRange: [1, 0], extrapolate: 'clamp' });
     let scale = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD, 0], outputRange: [1, 0], extrapolate: 'clamp' });
     let rotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["30deg", "0deg", "-30deg"] });
-    let animatedNopeStyles = { transform: [{ rotate }, { scale }], opacity: nopeOpacity };
+    let animatedOverlay = { transform: [{ rotate }, { scale }], opacity: overlayOpacity };
 
-    if (this.props.renderNope) {
-      return this.props.renderNope(pan);
+    if (this.props.renderLeftOverlay) {
+      return this.props.renderLeftOverlay(pan);
     }
 
-    if (this.props.showNope) {
+    if (this.props.showLeftOverlay) {
 
-      const inner = this.props.noView
-        ? this.props.noView
-        : <Text style={[styles.nopeText, this.props.nopeTextStyle]}>{this.props.nopeText}</Text>
+      const inner = this.props.overlayLeft
+        ? this.props.overlayLeft
+        : <Text style={[styles.overlayLeftText, this.props.overlayLeftTextStyle]}>{this.props.overlayLeftText}</Text>
 
-      return <Animated.View style={[styles.nope, this.props.nopeStyle, animatedNopeStyles]}>
+      return <Animated.View style={[styles.overlayLeftWrapper, this.props.overlayLeftWrapper, animatedOverlay]}>
         {inner}
       </Animated.View>;
     }
@@ -498,27 +510,27 @@ export default class SwipeCards extends Component {
     return null;
   }
 
-  renderMaybe() {
-    if (!this.props.hasMaybeAction) return null;
+  renderUpOverlay() {
+    if (!this.props.swipeUp) return null;
 
     let { pan } = this.state;
 
-    let maybeOpacity = pan.y.interpolate({ inputRange: [-SWIPE_THRESHOLD, -(SWIPE_THRESHOLD / 2)], outputRange: [1, 0], extrapolate: 'clamp' });
-    let maybeScale = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD, 0, SWIPE_THRESHOLD], outputRange: [0, 1, 0], extrapolate: 'clamp' });
-    let animatedMaybeStyles = { transform: [{ scale: maybeScale }], opacity: maybeOpacity };
+    let overlayOpacity = pan.y.interpolate({ inputRange: [-SWIPE_THRESHOLD, -(SWIPE_THRESHOLD / 2)], outputRange: [1, 0], extrapolate: 'clamp' });
+    let overlayScale = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD, 0, SWIPE_THRESHOLD], outputRange: [0, 1, 0], extrapolate: 'clamp' });
+    let animatedOverlay = { transform: [{ scale: overlayScale }], opacity: overlayOpacity };
 
-    if (this.props.renderMaybe) {
-      return this.props.renderMaybe(pan);
+    if (this.props.renderUpOverlay) {
+      return this.props.renderUpOverlay(pan);
     }
 
 
-    if (this.props.showMaybe) {
+    if (this.props.showUpOverlay) {
 
-      const inner = this.props.maybeView
-        ? this.props.maybeView
-        : <Text style={[styles.maybeText, this.props.maybeTextStyle]}>{this.props.maybeText}</Text>
+      const inner = this.props.overlayUp
+        ? this.props.overlayUp
+        : <Text style={[styles.overlayUpText, this.props.overlayUpTextStyle]}>{this.props.overlayUpText}</Text>
 
-      return <Animated.View style={[styles.maybe, this.props.maybeStyle, animatedMaybeStyles]}>
+      return <Animated.View style={[styles.overlayUpWrapper, this.props.overlayUpWrapper, animatedOverlay]}>
         {inner}
       </Animated.View>;
     }
@@ -526,24 +538,24 @@ export default class SwipeCards extends Component {
     return null;
   }
 
-  renderYup() {
+  renderRightOverlay() {
     let { pan } = this.state;
-    let yupOpacity = pan.x.interpolate({ inputRange: [(SWIPE_THRESHOLD / 2), SWIPE_THRESHOLD], outputRange: [0, 1], extrapolate: 'clamp' });
-    let yupScale = pan.x.interpolate({ inputRange: [0, SWIPE_THRESHOLD], outputRange: [0.5, 1], extrapolate: 'clamp' });
-    let rotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["0deg", "-30deg", "-60deg"] });
-    let animatedYupStyles = { transform: [{ scale: yupScale }, { rotate }], opacity: yupOpacity };
+    let overlayOpacity = pan.x.interpolate({ inputRange: [(SWIPE_THRESHOLD / 2), SWIPE_THRESHOLD], outputRange: [0, 1], extrapolate: 'clamp' });
+    let overlayScale = pan.x.interpolate({ inputRange: [0, SWIPE_THRESHOLD], outputRange: [0.5, 1], extrapolate: 'clamp' });
+    let overlayRotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["0deg", "-30deg", "-60deg"] });
+    let animatedOverlay = { transform: [{ scale: overlayScale }, { overlayRotate }], opacity: overlayOpacity };
 
-    if (this.props.renderYup) {
-      return this.props.renderYup(pan);
+    if (this.props.renderRightOverlay) {
+      return this.props.renderRightOverlay(pan);
     }
 
-    if (this.props.showYup) {
+    if (this.props.showRightOverlay) {
 
-      const inner = this.props.yupView
-        ? this.props.yupView
-        : <Text style={[styles.yupText, this.props.yupTextStyle]}>{this.props.yupText}</Text>;
+      const inner = this.props.overlayRight
+        ? this.props.overlayRight
+        : <Text style={[styles.overlayRightText, this.props.overlayRightTextStyle]}>{this.props.overlayRightText}</Text>;
 
-      return <Animated.View style={[styles.yup, this.props.yupStyle, animatedYupStyles]}>
+      return <Animated.View style={[styles.overlayRightWrapper, this.props.overlayRightWrapper, animatedOverlay]}>
         {inner}
       </Animated.View>;
     }
@@ -563,7 +575,7 @@ export default class SwipeCards extends Component {
     return (
       <View style={[styles.container, this.props.containerStyle]}>
         {this.props.stack ? this.renderStack() : this.renderCard()}
-        {this.renderMaybe()}
+        {this.renderUpOverlay()}
       </View>
     );
   }
