@@ -15,15 +15,17 @@ import {
 } from 'react-native';
 
 import clamp from 'clamp';
-
+const { width, height } = Dimensions.get('window')
 import Defaults from './Defaults.js';
 
-const {height, width} = Dimensions.get('window')
 const SWIPE_THRESHOLD = 240;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: 'transparent'
   },
   overlayRightWrapper: {
@@ -31,8 +33,8 @@ const styles = StyleSheet.create({
     top: 75,
     left: 20,
     backgroundColor: 'transparent',
-    borderColor: 'green',
-    borderWidth: 1,
+    borderColor: '#05C148',
+    borderWidth: 2,
     borderRadius: 15,
     padding: 10,
     zIndex: 2,
@@ -40,7 +42,7 @@ const styles = StyleSheet.create({
   overlayRightText: {
     fontSize: 40,
     fontWeight: 'bold',
-    color: 'green',
+    color: '#05C148',
   },
   overlayUpWrapper: {
     borderColor: 'blue',
@@ -57,8 +59,6 @@ const styles = StyleSheet.create({
   },
   overlayLeftWrapper: {
     position: 'absolute',
-    top: 75,
-    right: 20,
     backgroundColor: 'transparent',
     borderColor: 'red',
     borderWidth: 1,
@@ -75,9 +75,7 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    position: 'absolute',
-    width: width - 50,
-    height: height * .8
+    position: 'absolute'
   }
 });
 
@@ -179,7 +177,12 @@ export default class SwipeCards extends Component {
       enter: new Animated.Value(0.5),
       cards: [].concat(this.props.cards),
       card: this.props.cards[currentIndex[this.guid]],
+      viewMode: Dimensions.get('window').height > 500 ? 'portrait' : 'landscape',
+      height: Dimensions.get('window').height,
+      width: Dimensions.get('window').width
     };
+
+    Dimensions.addEventListener('change', this.detectOrientation)
 
     this.lastX = 0;
     this.lastY = 0;
@@ -272,6 +275,19 @@ export default class SwipeCards extends Component {
         }
       }
     });
+  }
+
+
+  componentWillUnmount() {
+    Dimensions.removeEventListener('change', this.detectOrientation)
+  }
+
+  detectOrientation = () => {
+    this.setState({
+      viewMode: Dimensions.get('window').height > 500 ? 'portrait' : 'landscape',
+      height: Dimensions.get('window').height,
+      width: Dimensions.get('window').width
+    })
   }
 
   _forceLeftSwipe() {
@@ -421,7 +437,7 @@ export default class SwipeCards extends Component {
 
     //Get the next stack of cards to render.
     let cards = this.state.cards.slice(currentIndex[this.guid], currentIndex[this.guid] + this.props.stackDepth).reverse();
-
+    let cardStyle = { width: this.state.viewMode === 'portrait' ? this.state.width - 50 : this.state.width * .8, height: this.state.viewMode === 'portrait' ? this.state.height * .8 : this.state.height - 100 }
     return cards.map((card, i) => {
 
       let offsetX = this.props.stackOffsetX * cards.length - i * this.props.stackOffsetX;
@@ -450,8 +466,8 @@ export default class SwipeCards extends Component {
         let { pan } = this.state;
         let [translateX, translateY] = [pan.x, pan.y];
 
-        let rotate = this.props.rotation ? pan.x.interpolate({ inputRange: [-width / 2, 0, width / 2], outputRange: ["-10deg", "0deg", "10deg"] }) : '0deg';
-        let opacity = this.props.smoothTransition ? 1 : pan.x.interpolate({ inputRange: [-width / 2, -width / 3, 0, width / 3, width / 2], outputRange: [0.8, 1, 1, 1, 0.8], extrapolate: 'clamp' });
+        let rotate = this.props.rotation ? pan.x.interpolate({ inputRange: [-this.state.width / 2, 0, this.state.width / 2], outputRange: ["-10deg", "0deg", "10deg"] }) : '0deg';
+        let opacity = this.props.smoothTransition ? 1 : pan.x.interpolate({ inputRange: [-this.state.width / 2, -this.state.width / 3, 0, this.state.width / 3, this.state.width / 2], outputRange: [0.8, 1, 1, 1, 0.8], extrapolate: 'clamp' });
 
         let animatedCardStyles = {
           ...style,
@@ -464,12 +480,14 @@ export default class SwipeCards extends Component {
           ]
         };
 
-        return <Animated.View key={key} style={[styles.card, animatedCardStyles, this.props.cardStyle, { left: 0, top: 0, right: 0, bottom: 0 }]} {... this._panResponder.panHandlers}>
+        return <Animated.View key={key} style={[styles.card, animatedCardStyles, cardStyle, this.props.cardStyle, { left: 0, top: 0, right: 0, bottom: 0 }]} {... this._panResponder.panHandlers}>
+          {this.renderLeftOverlay()}
+          {this.renderRightOverlay()}
           {this.props.renderCard(this.state.card)}
         </Animated.View>;
       }
 
-      return <Animated.View key={key} style={[style, styles.card, this.props.cardStyle]}>{this.props.renderCard(card)}</Animated.View>;
+      return <Animated.View key={key} style={[style, styles.card, cardStyle, this.props.cardStyle]}>{this.props.renderCard(card)}</Animated.View>;
     });
   }
 
@@ -477,19 +495,20 @@ export default class SwipeCards extends Component {
     if (!this.state.card) {
       return this.renderNoMoreCards();
     }
+    let cardStyle = { width: this.state.viewMode === 'portrait' ? this.state.width - 50 : this.state.width * .8, height: this.state.viewMode === 'portrait' ? this.state.height * .8 : this.state.height - 50 }
     const key = this.getCardKey(this.state.card)
 
     let { pan, enter } = this.state;
     let [translateX, translateY] = [pan.x, pan.y];
 
-    let rotate = pan.x.interpolate({ inputRange: [-width / 2, 0, width / 2], outputRange: ["-10deg", "0deg", "10deg"] });
-    let opacity = this.props.smoothTransition ? 1 : pan.x.interpolate({ inputRange: [-width / 2, -width / 3, 0, width / 3, width / 2], outputRange: [0.8, 1, 1, 1, 0.8], extrapolate: 'clamp' });
+    let rotate = pan.x.interpolate({ inputRange: [-width / 2, 0, this.state.width / 2], outputRange: ["-10deg", "0deg", "10deg"] });
+    let opacity = this.props.smoothTransition ? 1 : pan.x.interpolate({ inputRange: [-this.state.width / 2, -width / 3, 0, this.state.width / 3, this.state.width / 2], outputRange: [0.8, 1, 1, 1, 0.8], extrapolate: 'clamp' });
 
     let scale = enter;
 
     let animatedCardStyles = { transform: [{ translateX }, { translateY }, { rotate }, { scale }], opacity: opacity };
 
-    return <Animated.View key={key} style={[styles.card, animatedCardStyles, this.props.cardStyle]} {... this._panResponder.panHandlers}>
+    return <Animated.View key={key} style={[styles.card, animatedCardStyles, cardStyle, this.props.cardStyle]} {... this._panResponder.panHandlers}>
       {this.renderLeftOverlay()}
       {this.renderRightOverlay()}
       {this.props.renderCard(this.state.card)}
@@ -501,19 +520,19 @@ export default class SwipeCards extends Component {
     let overlayOpacity = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD / 2, -(SWIPE_THRESHOLD / 4)], outputRange: [1, 0], extrapolate: 'clamp' });
     let scale = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD / 2, 0], outputRange: [1, 0], extrapolate: 'clamp' });
     let rotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["30deg", "0deg", "-30deg"] });
-    let animatedOverlay = { transform: [{ rotate }, { scale }], opacity: overlayOpacity };
+    let animatedOverlay = { transform: [{ scale }, { rotate }], opacity: overlayOpacity };
 
     if (this.props.renderLeftOverlay) {
       return this.props.renderLeftOverlay(pan);
     }
-
+    const dynamicLeftWrapper = { top: this.state.viewMode === 'portrait' ? 75 : 100, right: this.state.viewMode === 'portrait' ? 25 : 100 }
     if (this.props.showLeftOverlay) {
 
       const inner = this.props.overlayLeft
         ? this.props.overlayLeft
         : <Text style={[styles.overlayLeftText, this.props.overlayLeftTextStyle]}>{this.props.overlayLeftText}</Text>
 
-      return <Animated.View style={[styles.overlayLeftWrapper, this.props.overlayLeftWrapper, animatedOverlay]}>
+      return <Animated.View style={[styles.overlayLeftWrapper, dynamicLeftWrapper, this.props.overlayLeftWrapper, , animatedOverlay]}>
         {inner}
       </Animated.View>;
     }
@@ -526,7 +545,7 @@ export default class SwipeCards extends Component {
 
     let { pan } = this.state;
 
-    let overlayOpacity = pan.y.interpolate({ inputRange: [-SWIPE_THRESHOLD / 2, -(SWIPE_THRESHOLD / 4)], outputRange: [1, 0], extrapolate: 'clamp' });
+    let overlayOpacity = pan.y.interpolate({ inputRange: [(SWIPE_THRESHOLD / 2), SWIPE_THRESHOLD / 4], outputRange: [0, 1], extrapolate: 'clamp' });
     let overlayScale = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD / 2, 0, SWIPE_THRESHOLD / 2], outputRange: [0, 1, 0], extrapolate: 'clamp' });
     let animatedOverlay = { transform: [{ scale: overlayScale }], opacity: overlayOpacity };
 
@@ -551,9 +570,9 @@ export default class SwipeCards extends Component {
 
   renderRightOverlay() {
     let { pan } = this.state;
-    let overlayOpacity = pan.x.interpolate({ inputRange: [(SWIPE_THRESHOLD / 2), SWIPE_THRESHOLD / 4], outputRange: [0, 1], extrapolate: 'clamp' });
+    let overlayOpacity = pan.x.interpolate({ inputRange: [SWIPE_THRESHOLD / 4, SWIPE_THRESHOLD / 3], outputRange: [0, 1], extrapolate: 'clamp' });
     let overlayScale = pan.x.interpolate({ inputRange: [0, SWIPE_THRESHOLD / 2], outputRange: [0.5, 1], extrapolate: 'clamp' });
-    let rotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["-30deg", "0deg", "30deg"] });
+    let rotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["0deg", "-30deg", "-60deg"] });
     let animatedOverlay = { transform: [{ scale: overlayScale }, { rotate }], opacity: overlayOpacity };
 
     if (this.props.renderRightOverlay) {
