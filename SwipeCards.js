@@ -61,7 +61,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: 'transparent',
     borderColor: 'red',
-    borderWidth: 1,
+    top: 75,
+    right: 20,
+    borderWidth: 2,
     borderRadius: 15,
     padding: 10,
     zIndex: 2,
@@ -518,21 +520,21 @@ export default class SwipeCards extends Component {
   renderLeftOverlay() {
     let { pan } = this.state;
     let overlayOpacity = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD / 2, -(SWIPE_THRESHOLD / 4)], outputRange: [1, 0], extrapolate: 'clamp' });
-    let scale = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD / 2, 0], outputRange: [1, 0], extrapolate: 'clamp' });
+    let scale = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD / 2, -SWIPE_THRESHOLD / 4, 0], outputRange: [1.15, .75, 0], extrapolate: 'clamp' });
     let rotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["30deg", "0deg", "-30deg"] });
     let animatedOverlay = { transform: [{ scale }, { rotate }], opacity: overlayOpacity };
 
     if (this.props.renderLeftOverlay) {
       return this.props.renderLeftOverlay(pan);
     }
-    const dynamicLeftWrapper = { top: this.state.viewMode === 'portrait' ? 75 : 100, right: this.state.viewMode === 'portrait' ? 25 : 100 }
+    // const dynamicLeftWrapper = { top: this.state.viewMode === 'portrait' ? 75 : 100, right: this.state.viewMode === 'portrait' ? 25 : 100 }
     if (this.props.showLeftOverlay) {
 
       const inner = this.props.overlayLeft
         ? this.props.overlayLeft
         : <Text style={[styles.overlayLeftText, this.props.overlayLeftTextStyle]}>{this.props.overlayLeftText}</Text>
 
-      return <Animated.View style={[styles.overlayLeftWrapper, dynamicLeftWrapper, this.props.overlayLeftWrapper, , animatedOverlay]}>
+      return <Animated.View style={[styles.overlayLeftWrapper, this.props.overlayLeftWrapper, , animatedOverlay]}>
         {inner}
       </Animated.View>;
     }
@@ -571,8 +573,8 @@ export default class SwipeCards extends Component {
   renderRightOverlay() {
     let { pan } = this.state;
     let overlayOpacity = pan.x.interpolate({ inputRange: [SWIPE_THRESHOLD / 4, SWIPE_THRESHOLD / 3], outputRange: [0, 1], extrapolate: 'clamp' });
-    let overlayScale = pan.x.interpolate({ inputRange: [0, SWIPE_THRESHOLD / 2], outputRange: [0.5, 1], extrapolate: 'clamp' });
-    let rotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["0deg", "-30deg", "-60deg"] });
+    let overlayScale = pan.x.interpolate({ inputRange: [0, SWIPE_THRESHOLD / 4, SWIPE_THRESHOLD / 2], outputRange: [0.5, .75, 1.15], extrapolate: 'clamp' });
+    let rotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["0deg", "-30deg", "-45deg"] });
     let animatedOverlay = { transform: [{ scale: overlayScale }, { rotate }], opacity: overlayOpacity };
 
     if (this.props.renderRightOverlay) {
