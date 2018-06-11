@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
     width: width - 50,
-    height: height - 120
+    height: height * .8
   }
 });
 
@@ -136,9 +136,9 @@ export default class SwipeCards extends Component {
     onLoop: () => null,
     allowGestureTermination: true,
     stack: false,
-    stackDepth: 3,
+    stackDepth: 2,
     stackOffsetX: 0,
-    stackOffsetY: 15,
+    stackOffsetY: 12,
     showRightOverlay: true,
     showUpOverlay: false,
     showLeftOverlay: true,
@@ -351,7 +351,12 @@ export default class SwipeCards extends Component {
   _animateEntrance() {
     Animated.spring(
       this.state.enter,
-      { toValue: 1, friction: 8 }
+      {
+        toValue: 1,
+        friction: 7,
+        tension: 40,
+        duration: 350
+      }
     ).start();
   }
 
@@ -493,8 +498,8 @@ export default class SwipeCards extends Component {
 
   renderLeftOverlay() {
     let { pan } = this.state;
-    let overlayOpacity = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD, -(SWIPE_THRESHOLD / 2)], outputRange: [1, 0], extrapolate: 'clamp' });
-    let scale = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD, 0], outputRange: [1, 0], extrapolate: 'clamp' });
+    let overlayOpacity = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD / 2, -(SWIPE_THRESHOLD / 4)], outputRange: [1, 0], extrapolate: 'clamp' });
+    let scale = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD / 2, 0], outputRange: [1, 0], extrapolate: 'clamp' });
     let rotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["30deg", "0deg", "-30deg"] });
     let animatedOverlay = { transform: [{ rotate }, { scale }], opacity: overlayOpacity };
 
@@ -521,8 +526,8 @@ export default class SwipeCards extends Component {
 
     let { pan } = this.state;
 
-    let overlayOpacity = pan.y.interpolate({ inputRange: [-SWIPE_THRESHOLD, -(SWIPE_THRESHOLD / 2)], outputRange: [1, 0], extrapolate: 'clamp' });
-    let overlayScale = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD, 0, SWIPE_THRESHOLD], outputRange: [0, 1, 0], extrapolate: 'clamp' });
+    let overlayOpacity = pan.y.interpolate({ inputRange: [-SWIPE_THRESHOLD / 2, -(SWIPE_THRESHOLD / 4)], outputRange: [1, 0], extrapolate: 'clamp' });
+    let overlayScale = pan.x.interpolate({ inputRange: [-SWIPE_THRESHOLD / 2, 0, SWIPE_THRESHOLD / 2], outputRange: [0, 1, 0], extrapolate: 'clamp' });
     let animatedOverlay = { transform: [{ scale: overlayScale }], opacity: overlayOpacity };
 
     if (this.props.renderUpOverlay) {
@@ -546,8 +551,8 @@ export default class SwipeCards extends Component {
 
   renderRightOverlay() {
     let { pan } = this.state;
-    let overlayOpacity = pan.x.interpolate({ inputRange: [(SWIPE_THRESHOLD / 2), SWIPE_THRESHOLD], outputRange: [0, 1], extrapolate: 'clamp' });
-    let overlayScale = pan.x.interpolate({ inputRange: [0, SWIPE_THRESHOLD], outputRange: [0.5, 1], extrapolate: 'clamp' });
+    let overlayOpacity = pan.x.interpolate({ inputRange: [(SWIPE_THRESHOLD / 2), SWIPE_THRESHOLD / 4], outputRange: [0, 1], extrapolate: 'clamp' });
+    let overlayScale = pan.x.interpolate({ inputRange: [0, SWIPE_THRESHOLD / 2], outputRange: [0.5, 1], extrapolate: 'clamp' });
     let rotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["-30deg", "0deg", "30deg"] });
     let animatedOverlay = { transform: [{ scale: overlayScale }, { rotate }], opacity: overlayOpacity };
 
