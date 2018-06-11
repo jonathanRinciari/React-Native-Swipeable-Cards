@@ -445,8 +445,8 @@ export default class SwipeCards extends Component {
         let { pan } = this.state;
         let [translateX, translateY] = [pan.x, pan.y];
 
-        let rotate = this.props.rotation ? pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["-30deg", "0deg", "30deg"] }) : '0deg';
-        let opacity = this.props.smoothTransition ? 1 : pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: [0.5, 1, 0.5] });
+        let rotate = this.props.rotation ? pan.x.interpolate({ inputRange: [-width / 2, 0, width / 2], outputRange: ["-10deg", "0deg", "10deg"] }) : '0deg';
+        let opacity = this.props.smoothTransition ? 1 : pan.x.interpolate({ inputRange: [-width / 2 , 0, width / 2], outputRange: [0.5, 1, 0.5] });
 
         let animatedCardStyles = {
           ...style,
@@ -477,12 +477,12 @@ export default class SwipeCards extends Component {
     let { pan, enter } = this.state;
     let [translateX, translateY] = [pan.x, pan.y];
 
-    let rotate = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: ["-30deg", "0deg", "30deg"] });
-    let opacity = pan.x.interpolate({ inputRange: [-200, 0, 200], outputRange: [0.5, 1, 0.5] });
+    let rotate = pan.x.interpolate({ inputRange: [-width / 2, 0, width / 2], outputRange: ["-10deg", "0deg", "10deg"] });
+    let opacity = pan.x.interpolate({ inputRange: [-width / 2, 0, width / 2], outputRange: [0.5, 1, 0.5] });
 
     let scale = enter;
 
-    let animatedCardStyles = { transform: [{ translateX }, { translateY }, { rotate }, { scale }], opacity };
+    let animatedCardStyles = { transform: [{ translateX }, { translateY }, { rotate }, { scale }, { opacity }] };
 
     return <Animated.View key={key} style={[styles.card, animatedCardStyles, this.props.cardStyle]} {... this._panResponder.panHandlers}>
       {this.renderLeftOverlay()}
