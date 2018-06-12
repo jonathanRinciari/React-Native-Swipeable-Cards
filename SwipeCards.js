@@ -26,6 +26,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    alignItems: 'stretch',
+    position: 'absolute',
     backgroundColor: 'transparent'
   },
   overlayRightWrapper: {
@@ -33,9 +35,6 @@ const styles = StyleSheet.create({
     top: 75,
     left: 20,
     backgroundColor: 'transparent',
-    borderColor: '#05C148',
-    borderWidth: 2,
-    borderRadius: 15,
     padding: 10,
     zIndex: 2,
   },
@@ -45,12 +44,9 @@ const styles = StyleSheet.create({
     color: '#05C148',
   },
   overlayUpWrapper: {
-    borderColor: 'blue',
-    borderWidth: 2,
     position: 'absolute',
     padding: 20,
     bottom: 20,
-    borderRadius: 5,
     right: 20,
   },
   overlayUpText: {
@@ -60,11 +56,8 @@ const styles = StyleSheet.create({
   overlayLeftWrapper: {
     position: 'absolute',
     backgroundColor: 'transparent',
-    borderColor: 'red',
     top: 75,
     right: 20,
-    borderWidth: 2,
-    borderRadius: 15,
     padding: 10,
     zIndex: 2,
   },
@@ -148,7 +141,7 @@ export default class SwipeCards extends Component {
     overlayLeftText: "Dislike",
     overlayUpText: "Maybe!",
     overlayRightText: "Like!",
-    onClickHandler: () => { alert('tap') },
+    onClickHandler: null,
     onDragStart: () => { },
     onDragRelease: () => { },
     cardRemoved: (ix) => null,
