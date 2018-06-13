@@ -462,7 +462,7 @@ export default class SwipeCards extends Component {
         let [translateX, translateY] = [pan.x, pan.y];
 
         let rotate = this.props.rotation ? pan.x.interpolate({ inputRange: [-this.state.width / 2, 0, this.state.width / 2], outputRange: ["-10deg", "0deg", "10deg"] }) : '0deg';
-        let opacity = this.props.smoothTransition ? 1 : pan.x.interpolate({ inputRange: [-this.state.width / 2, -this.state.width / 3, 0, this.state.width / 3, this.state.width / 2], outputRange: [0.8, 1, 1, 1, 0.8], extrapolate: 'clamp' });
+        let opacity = this.props.smoothTransition ? 1 : pan.x.interpolate({ inputRange: [-this.state.width / 2, -this.state.width / 3, 0, this.state.width / 3, this.state.width / 2], outputRange: [0.3, .6, 1, .6, 0.3]});
 
         let animatedCardStyles = {
           ...style,
