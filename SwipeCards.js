@@ -210,7 +210,7 @@ export default class SwipeCards extends Component {
         let velocity;
         if (Math.abs(dx) <= 5 && Math.abs(dy) <= 5)   //meaning the gesture did not cover any distance
         {
-          this.props.onClickHandler(this.state.card)
+          // this.props.onClickHandler(this.state.card)
         }
 
         if (vx > 0) {
