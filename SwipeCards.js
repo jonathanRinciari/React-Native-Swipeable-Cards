@@ -250,7 +250,8 @@ export default class SwipeCards extends Component {
           } else {
             this.cardAnimation = Animated.decay(this.state.pan, {
               velocity: { x: velocity, y: vy },
-              deceleration: 0.98
+              deceleration: 0.98,
+              useNativeDriver: true
             });
             this.cardAnimation.start(status => {
               if (status.finished) this._advanceState();
@@ -362,7 +363,8 @@ export default class SwipeCards extends Component {
         toValue: 1,
         friction: 7,
         tension: 40,
-        duration: 350
+        duration: 350,
+        useNativeDriver: true
       }
     ).start();
   }
@@ -386,7 +388,8 @@ export default class SwipeCards extends Component {
   _resetPan() {
     Animated.spring(this.state.pan, {
       toValue: { x: 0, y: 0 },
-      friction: 4
+      friction: 4,
+      useNativeDriver: true
     }).start();
   }
 
