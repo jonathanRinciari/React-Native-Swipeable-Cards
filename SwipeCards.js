@@ -22,12 +22,8 @@ const SWIPE_THRESHOLD = 240;
 
 const styles = StyleSheet.create({
   container: {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: 'stretch',
-    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
     backgroundColor: 'transparent'
   },
   overlayRightWrapper: {
@@ -70,7 +66,7 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    position: 'absolute'
+    position: 'absolute',
   }
 });
 
@@ -210,7 +206,7 @@ export default class SwipeCards extends Component {
         let velocity;
         if (Math.abs(dx) <= 5 && Math.abs(dy) <= 5)   //meaning the gesture did not cover any distance
         {
-          // this.props.onClickHandler(this.state.card)
+          this.props.onClickHandler(this.state.card)
         }
 
         if (vx > 0) {
@@ -449,8 +445,8 @@ export default class SwipeCards extends Component {
 
       let style = {
         position: 'absolute',
-        top: this.state.enter.interpolate({ inputRange: [0, 1], outputRange: [lastOffsetY, offsetY] }),
-        left: this.state.enter.interpolate({ inputRange: [0, 1], outputRange: [lastOffsetX, offsetX] }),
+        // top: this.state.enter.interpolate({ inputRange: [0, 1], outputRange: [lastOffsetY, offsetY] }),
+        // left: this.state.enter.interpolate({ inputRange: [0, 31], outputRange: [lastOffsetX * this.props.x, offsetX * this.props.x] }),
         opacity: this.props.smoothTransition ? 1 : this.state.enter.interpolate({ inputRange: [0, 1], outputRange: [lastOpacity, opacity] }),
         transform: [{ scale: this.state.enter.interpolate({ inputRange: [0, 1], outputRange: [lastScale, scale] }) }],
         elevation: i * 10
@@ -475,14 +471,14 @@ export default class SwipeCards extends Component {
           ]
         };
 
-        return <Animated.View key={key} style={[styles.card, animatedCardStyles, cardStyle, this.props.cardStyle, { left: 0, top: 0, right: 0, bottom: 0 }]} {... this._panResponder.panHandlers}>
+        return <Animated.View key={key} style={[styles.card, animatedCardStyles, cardStyle, this.props.cardStyle, { left: this.props.x, top: this.props.y, right: this.props.x, bottom: this.props.y  }]} {... this._panResponder.panHandlers}>
           {this.renderLeftOverlay()}
           {this.renderRightOverlay()}
           {this.props.renderCard(this.state.card)}
         </Animated.View>;
       }
 
-      return <Animated.View key={key} style={[style, styles.card, cardStyle, this.props.cardStyle]}>{this.props.renderCard(card)}</Animated.View>;
+      return <Animated.View key={key} style={[style, styles.card, cardStyle, this.props.cardStyle, { left: this.props.x, top: this.props.y * 2, right: this.props.x, bottom: this.props.y }]}>{this.props.renderCard(card)}</Animated.View>;
     });
   }
 
