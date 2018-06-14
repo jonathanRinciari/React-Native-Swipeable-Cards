@@ -1,8 +1,8 @@
 {
   "name": "react-native-swipeable-cards",
-  "version": "1.1.23",
+  "version": "1.1.24",
   "description": "Swipeable card component for react native",
-  "main": "SwipeCards.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
